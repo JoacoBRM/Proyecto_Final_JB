@@ -1,6 +1,6 @@
 /* ========================================
-   SISTEMA DE MODALES Y ALERTAS PERSONALIZADAS
-   ======================================== */
+    SISTEMA DE MODALES Y ALERTAS PERSONALIZADAS
+======================================== */
 
 class CustomAlerts {
     constructor() {

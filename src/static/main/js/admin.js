@@ -1,6 +1,6 @@
 /* ========================================
-   SCRIPTS PARA ADMINISTRACIÓN
-   ======================================== */
+    SCRIPTS PARA ADMINISTRACIÓN
+======================================== */
 
 // Inicialización cuando el DOM está listo
 document.addEventListener('DOMContentLoaded', function() {

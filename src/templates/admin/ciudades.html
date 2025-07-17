@@ -60,10 +60,10 @@
                                         <div class="form-group">
                                             <label for="nombre">Nombre de la Ciudad *</label>
                                             <input type="text" class="form-control" id="nombre" name="nombre" 
-                                                   required maxlength="100" placeholder="Ingrese el nombre de la ciudad"
-                                                   pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" 
-                                                   title="Solo se permiten letras y espacios"
-                                                   oninput="validateTextInput(this)">
+                                                required maxlength="100" placeholder="Ingrese el nombre de la ciudad"
+                                                pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" 
+                                                title="Solo se permiten letras y espacios"
+                                                oninput="validateTextInput(this)">
                                             <small class="form-text text-muted">Solo se permiten letras y espacios</small>
                                         </div>
                                     </div>
@@ -177,13 +177,13 @@
                                                 <td>
                                                     <div class="btn-group" role="group">
                                                         <a href="{{ url_for('admin.editar_ciudad', ciudad_id=ciudad.id) }}" 
-                                                           class="btn btn-sm btn-warning">
+                                                        class="btn btn-sm btn-warning">
                                                             <i class="fas fa-edit"></i> Editar
                                                         </a>
                                                         <form method="POST" 
-                                                              action="{{ url_for('admin.eliminar_ciudad', ciudad_id=ciudad.id) }}" 
-                                                              style="display: inline;"
-                                                              onsubmit="return confirm('¿Está seguro de que desea eliminar la ciudad {{ ciudad.nombre }}? Esta acción no se puede deshacer.')">
+                                                            action="{{ url_for('admin.eliminar_ciudad', ciudad_id=ciudad.id) }}" 
+                                                            style="display: inline;"
+                                                            onsubmit="return confirm('¿Está seguro de que desea eliminar la ciudad {{ ciudad.nombre }}? Esta acción no se puede deshacer.')">
                                                             <button type="submit" 
                                                                     class="btn btn-sm btn-danger">
                                                                 <i class="fas fa-trash"></i> Eliminar

@@ -168,7 +168,7 @@ class GrafoController:
             valido, mensaje = validar_ciudades_existen("Ibarra", "Loja")
             if not valido:
                 return render_template('grafos/camino.html', 
-                                     resultado={'error': mensaje})
+                                    resultado={'error': mensaje})
             
             # Calcular la ruta óptima entre las ciudades fijas
             resultado = camino_optimo_con_costera("Ibarra", "Loja")
@@ -191,7 +191,7 @@ class GrafoController:
         except Exception as e:
             print(f"Error calculando ruta fija: {e}")
             return render_template('grafos/camino.html', 
-                                 resultado={'error': 'Error calculando la ruta desde la base de datos'})
+                                resultado={'error': 'Error calculando la ruta desde la base de datos'})
     
     @staticmethod
     def generar_imagen_grafo():

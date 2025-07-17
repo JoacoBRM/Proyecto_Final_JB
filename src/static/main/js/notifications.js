@@ -1,6 +1,6 @@
 /* ========================================
-   NOTIFICACIONES PARA OPERACIONES CRUD
-   ======================================== */
+    NOTIFICACIONES PARA OPERACIONES CRUD
+======================================== */
 
 document.addEventListener('DOMContentLoaded', function() {
     // Mostrar notificaciones basadas en parámetros URL o mensajes flash
