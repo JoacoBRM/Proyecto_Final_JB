@@ -17,7 +17,7 @@ Fecha: Julio 2025
 
 from flask import render_template, request, redirect, url_for, flash
 from flask_login import login_user, current_user
-from models.user import User
+from models import User
 from extensions import db
 from datetime import datetime
 

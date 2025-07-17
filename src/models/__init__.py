@@ -20,3 +20,10 @@ from .user import User           # Modelo de usuarios del sistema
 from .ciudad import Ciudad       # Modelo de ciudades (nodos del grafo)
 from .ruta import Ruta          # Modelo de rutas (aristas del grafo)
 from .provincia import Provincia # Modelo de provincias (agrupación territorial)
+
+__all__ = [
+    'User',
+    'Ciudad',
+    'Ruta',
+    'Provincia'
+]

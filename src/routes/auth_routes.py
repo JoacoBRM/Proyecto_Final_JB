@@ -16,7 +16,7 @@ Fecha: Julio 2025
 
 from flask import Blueprint, redirect, url_for, flash
 from flask_login import logout_user, login_required
-from controllers.auth_controller import AuthController
+from controllers import AuthController
 
 # Crear blueprint para rutas de autenticación
 auth_bp = Blueprint('auth', __name__)

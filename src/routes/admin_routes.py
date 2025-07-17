@@ -18,7 +18,7 @@ Fecha: Julio 2025
 """
 
 from flask import Blueprint
-from controllers.admin_controller import AdminController
+from controllers import AdminController
 
 # Crear blueprint para rutas administrativas con prefijo URL
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')

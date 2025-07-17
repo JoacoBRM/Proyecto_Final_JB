@@ -19,9 +19,7 @@ Fecha: Julio 2025
 from flask import render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from extensions import db
-from models.provincia import Provincia
-from models.ciudad import Ciudad
-from models.ruta import Ruta
+from models import Provincia, Ciudad, Ruta
 
 class AdminController:
     """

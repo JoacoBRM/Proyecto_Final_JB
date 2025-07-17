@@ -19,7 +19,7 @@ Fecha: Julio 2025
 
 from flask import Blueprint
 from flask_login import login_required
-from controllers.grafo_controller import GrafoController
+from controllers import GrafoController
 
 # Crear blueprint para rutas de grafos con prefijo URL
 starter_bp = Blueprint('grafos', __name__, url_prefix='/grafos')

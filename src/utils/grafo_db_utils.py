@@ -27,9 +27,8 @@ matplotlib.use('Agg')  # Backend sin interfaz gráfica para uso en servidor
 import matplotlib.pyplot as plt
 import networkx as nx
 import io
-from models.ciudad import Ciudad
-from models.ruta import Ruta
-from extensions import db
+from models import Ciudad
+from models import Ruta
 
 
 def construir_grafo():

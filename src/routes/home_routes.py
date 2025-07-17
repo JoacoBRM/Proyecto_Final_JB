@@ -15,7 +15,7 @@ Fecha: Julio 2025
 
 from flask import Blueprint, redirect, url_for
 from flask_login import login_required, current_user
-from controllers.home_controller import HomeController
+from controllers import HomeController
 
 # Crear blueprint para rutas principales
 home_bp = Blueprint('home', __name__)
