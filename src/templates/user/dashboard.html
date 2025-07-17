@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}
+Grafos con Flask - Bienvenido {{ user_info.nombre }}
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Panel de Inicio</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item active">Inicio</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Columna principal de bienvenida -->
+                <div class="col-lg-8">
+                    <div class="text-center mb-4">
+                        <img src="{{ url_for('static', filename='main/img/grafo_main.png')}}" class="img-fluid mb-4" alt="Ejemplo Grafo" style="max-width: 300px;">
+                        <h1 class="mb-4">¡Bienvenido, {{ user_info.nombre }}!</h1>
+                        <p class="lead mb-4">Sistema de análisis de grafos y rutas óptimas</p>
+                        <p class="text-muted">Miembro desde: {{ user_info.fecha_registro }}</p>
+                    </div>
+
+                    <!-- Funcionalidades disponibles -->
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-rocket"></i> Funcionalidades Disponibles</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-primary h-100">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-project-diagram fa-3x text-primary mb-3"></i>
+                                            <h6>Teoría Grafos</h6>
+                                            <p class="small">Explora la teoría resumida del grafo de ciudades</p>
+                                            <a href="{{ url_for('grafos.starter') }}" class="btn btn-primary btn-sm">Ver Teoría</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-success h-100">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-calculator fa-3x text-success mb-3"></i>
+                                            <h6>Cálculo de Rutas</h6>
+                                            <p class="small">Calcula la ruta óptima entre dos ciudades</p>
+                                            <a href="{{ url_for('grafos.calcular_camino') }}" class="btn btn-success btn-sm">Calcular Ruta</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card border-info h-100">
+                                        <div class="card-body text-center">
+                                            <i class="fas fa-route fa-3x text-info mb-3"></i>
+                                            <h6>Ruta Ejemplo</h6>
+                                            <p class="small">Ver ruta predefinida Ibarra - Loja</p>
+                                            <a href="{{ url_for('grafos.ver_camino') }}" class="btn btn-info btn-sm">Ver Ejemplo</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar con estadísticas -->
+                <div class="col-lg-4">
+                    <!-- Información del usuario -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-info text-white">
+                            <h6 class="mb-0"><i class="fas fa-user"></i> Tu Información</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Usuario:</strong> {{ user_info.nombre }}</p>
+                            <p class="mb-2"><strong>Email:</strong> {{ user_info.email }}</p>
+                            <p class="mb-2"><strong>Fecha de registro:</strong> {{ user_info.fecha_registro }}</p>
+                            <p class="mb-0">
+                                <strong>Estado:</strong> 
+                                <span class="badge badge-{{ 'success' if user_info.activo else 'danger' }}">
+                                    {{ 'Activo' if user_info.activo else 'Inactivo' }}
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas del sistema -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-warning text-dark">
+                            <h6 class="mb-0"><i class="fas fa-chart-pie"></i> Estadísticas de Grafos</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-primary">{{ stats_grafos.total_ciudades }}</h4>
+                                    <small>Ciudades Totales</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-info">{{ stats_grafos.ciudades_costeras }}</h4>
+                                    <small>Ciudades Costeras</small>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h4 class="text-success">{{ stats_grafos.conexiones_posibles }}</h4>
+                                    <small>Conexiones Posibles</small>
+                                </div>
+                                <div class="col-6">
+                                    <h4 class="text-warning">${{ stats_grafos.costo_promedio }}</h4>
+                                    <small>Costo Promedio</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Estadísticas de usuarios -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-secondary text-white">
+                            <h6 class="mb-0"><i class="fas fa-users"></i> Usuarios del Sistema</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row text-center">
+                                <div class="col-12 mb-2">
+                                    <h4 class="text-dark">{{ stats_usuarios.total }}</h4>
+                                    <small>Usuarios Registrados</small>
+                                </div>
+                            </div>
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <h5 class="text-success">{{ stats_usuarios.active }}</h5>
+                                    <small>Activos</small>
+                                </div>
+                                <div class="col-6">
+                                    <h5 class="text-primary">{{ stats_usuarios.recent }}</h5>
+                                    <small>Este Mes</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del sistema -->
+                    <div class="card">
+                        <div class="card-header bg-dark text-white">
+                            <h6 class="mb-0"><i class="fas fa-cog"></i> Sistema</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2"><strong>Versión:</strong> {{ sistema_info.version }}</p>
+                            <p class="mb-2"><strong>Fecha:</strong> {{ sistema_info.fecha_actual }}</p>
+                            <p class="mb-0"><strong>Hora:</strong> {{ sistema_info.hora_actual }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

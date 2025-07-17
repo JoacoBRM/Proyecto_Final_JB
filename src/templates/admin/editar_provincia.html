@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Editar Provincia{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main/css/admin.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='main/js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/notifications.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/editar_provincia.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Editar Provincia</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home.home') }}">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('admin.listar_provincias') }}">Provincias</a></li>
+                        <li class="breadcrumb-item active">Editar</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Mostrar mensajes flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Editar Provincia: {{ provincia.nombre }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST">
+                                <div class="form-group">
+                                    <label for="nombre">Nombre de la Provincia *</label>
+                                    <input type="text" class="form-control" id="nombre" name="nombre" 
+                                           value="{{ provincia.nombre }}" required maxlength="100" 
+                                           placeholder="Ingrese el nombre de la provincia"
+                                           pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" 
+                                           title="Solo se permiten letras y espacios"
+                                           oninput="validateTextInput(this)">
+                                    <small class="form-text text-muted">Solo se permiten letras y espacios</small>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <p class="text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        Esta provincia tiene {{ provincia.ciudades|length }} ciudad(es) asociada(s).
+                                    </p>
+                                </div>
+
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save"></i> Guardar Cambios
+                                    </button>
+                                    <a href="{{ url_for('admin.listar_provincias') }}" class="btn btn-secondary">
+                                        <i class="fas fa-times"></i> Cancelar
+                                    </a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

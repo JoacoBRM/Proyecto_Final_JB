@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block title %}Administrar Ciudades{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main/css/admin.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='main/js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/notifications.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/ciudades.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Administrar Ciudades</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home.home') }}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Ciudades</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Mostrar mensajes flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Formulario para crear nueva ciudad -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Agregar Nueva Ciudad</h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin.crear_ciudad') }}" method="POST" id="formCrearCiudad">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="nombre">Nombre de la Ciudad *</label>
+                                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                                   required maxlength="100" placeholder="Ingrese el nombre de la ciudad"
+                                                   pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" 
+                                                   title="Solo se permiten letras y espacios"
+                                                   oninput="validateTextInput(this)">
+                                            <small class="form-text text-muted">Solo se permiten letras y espacios</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="provincia_id">Provincia *</label>
+                                            <select class="form-control" id="provincia_id" name="provincia_id" required>
+                                                <option value="">Seleccione una provincia</option>
+                                                {% for provincia in provincias %}
+                                                <option value="{{ provincia.id }}">{{ provincia.nombre }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label for="es_costera">Características</label>
+                                            <div class="form-check">
+                                                <input type="checkbox" class="form-check-input" id="es_costera" name="es_costera">
+                                                <label class="form-check-label" for="es_costera">
+                                                    Es ciudad costera
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Sección para agregar rutas -->
+                                <div class="row">
+                                    <div class="col-12">
+                                        <h5>Conexiones con otras ciudades (No Dirigidas)</h5>
+                                        <p class="text-muted">Seleccione las ciudades a las que se conectará esta nueva ciudad y especifique el costo de la ruta.</p>
+                                        <div id="rutasContainer">
+                                            <div class="row ruta-item mb-2">
+                                                <div class="col-md-5">                                    <select class="form-control" name="ciudades_conectadas">
+                                        <option value="">Seleccione una ciudad</option>
+                                        {% for ciudad in todas_ciudades %}
+                                        <option value="{{ ciudad.id }}">{{ ciudad.nombre }} ({{ ciudad.provincia.nombre }})</option>
+                                        {% endfor %}
+                                    </select>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="number" class="form-control" name="costos" 
+                                                           placeholder="Costo" step="0.01" min="0">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-success" onclick="agregarRuta()">
+                                                        <i class="fas fa-plus"></i>
+                                                    </button>
+                                                    <button type="button" class="btn btn-danger" onclick="eliminarRuta(this)">
+                                                        <i class="fas fa-minus"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-plus"></i> Agregar Ciudad
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de ciudades existentes -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Ciudades Registradas</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if ciudades %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nombre</th>
+                                                <th>Provincia</th>
+                                                <th>Tipo</th>
+                                                <th>Rutas</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ciudad in ciudades %}
+                                            <tr>
+                                                <td>{{ ciudad.id }}</td>
+                                                <td>{{ ciudad.nombre }}</td>
+                                                <td>{{ ciudad.provincia.nombre }}</td>
+                                                <td>
+                                                    {% if ciudad.es_costera %}
+                                                        <span class="badge badge-info">Costera</span>
+                                                    {% else %}
+                                                        <span class="badge badge-secondary">Interior</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    <span class="badge badge-success">
+                                                        {{ ciudad.rutas_origen|length }} conexión(es)
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="{{ url_for('admin.editar_ciudad', ciudad_id=ciudad.id) }}" 
+                                                           class="btn btn-sm btn-warning">
+                                                            <i class="fas fa-edit"></i> Editar
+                                                        </a>
+                                                        <form method="POST" 
+                                                              action="{{ url_for('admin.eliminar_ciudad', ciudad_id=ciudad.id) }}" 
+                                                              style="display: inline;"
+                                                              onsubmit="return confirm('¿Está seguro de que desea eliminar la ciudad {{ ciudad.nombre }}? Esta acción no se puede deshacer.')">
+                                                            <button type="submit" 
+                                                                    class="btn btn-sm btn-danger">
+                                                                <i class="fas fa-trash"></i> Eliminar
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    No hay ciudades registradas. Agregue la primera ciudad usando el formulario anterior.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enlaces de navegación -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <a href="{{ url_for('admin.listar_provincias') }}" class="btn btn-success">
+                                <i class="fas fa-map"></i> Administrar Provincias
+                            </a>
+                            <a href="{{ url_for('admin.listar_rutas') }}" class="btn btn-info">
+                                <i class="fas fa-route"></i> Ver Rutas
+                            </a>
+                            <a href="{{ url_for('home.home') }}" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Volver al Inicio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

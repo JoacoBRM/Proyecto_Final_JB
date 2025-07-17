@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block title %}Calculadora de Rutas{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='main/js/export_pdf.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Calculadora de Rutas</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home.home') }}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Cálculo de Rutas</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0"><i class="fas fa-calculator"></i> Buscar camino más económico</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post" class="row g-4 justify-content-center">
+                        <div class="col-12 col-md-4 d-flex flex-column align-items-center">
+                            <label for="origen" class="titulo-ciudad text-center">🌍 Ciudad de origen</label>
+                            <select name="origen" id="origen" class="form-control form-control-lg mb-3" required>
+                                {% for ciudad in ciudades %}
+                                <option value="{{ ciudad }}"
+                                    {% if request.form.origen == ciudad %}selected{% endif %}>
+                                    {{ ciudad }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12 col-md-4 d-flex flex-column align-items-center">
+                            <label for="destino" class="titulo-ciudad text-center">📍 Ciudad de destino</label>
+                            <select name="destino" id="destino" class="form-control form-control-lg mb-3" required>
+                                {% for ciudad in ciudades %}
+                                <option value="{{ ciudad }}"
+                                    {% if request.form.destino == ciudad %}selected{% endif %}>
+                                    {{ ciudad }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="col-12 text-center">
+                            <button type="submit" class="btn btn-success btn-lg px-5 mt-3 shadow-sm">
+                                <i class="fas fa-calculator"></i> Calcular
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if resultado %}
+                <div class="card mt-4">
+                    <div class="card-header bg-success text-white">
+                        <h4><i class="fas fa-check-circle"></i> Resultado del Cálculo</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p><strong><i class="fas fa-route"></i> Ruta:</strong> {{ resultado.camino | join(" → ") }}</p>
+                                <p><strong><i class="fas fa-dollar-sign"></i> Costo total:</strong> ${{ resultado.costo }}</p>
+                                {% if resultado.distancia_total %}
+                                <p><strong><i class="fas fa-road"></i> Paradas:</strong> {{ resultado.distancia_total }} conexiones</p>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6">
+                                {% if resultado.tiempo_estimado %}
+                                <p><strong><i class="fas fa-clock"></i> Tiempo estimado:</strong> {{ resultado.tiempo_estimado }} horas</p>
+                                {% endif %}
+                                {% if resultado.fecha_calculo %}
+                                <p><strong><i class="fas fa-calendar"></i> Calculado:</strong> {{ resultado.fecha_calculo }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        {% if resultado.valido %}
+                            <div class="alert alert-success mt-2" role="alert">
+                                <i class="fas fa-ship"></i> <strong>✅ El camino incluye una ciudad costera.</strong>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-warning mt-2" role="alert">
+                                <i class="fas fa-exclamation-triangle"></i> <strong>⚠️ El camino NO pasa por ciudad costera.</strong>
+                            </div>
+                        {% endif %}
+                        
+                        <div class="text-center mt-3">
+                            <button onclick="exportarPDF('{{ request.form.origen }}', '{{ request.form.destino }}', this)" 
+                                    class="btn btn-danger btn-lg">
+                                <i class="fas fa-file-pdf"></i> Exportar a PDF
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                {% if resultado.camino %}
+                    <div class="card mt-4">
+                        <div class="card-body text-center">
+                            <img src="{{ url_for('grafos.grafo_imagen_camino', **{'camino': resultado.camino}) }}"
+                                 alt="Grafo con camino resaltado"
+                                 class="img-fluid border rounded shadow"
+                                 style="max-width: 600px; height: auto;"/>
+                            <p class="text-muted mt-2">Ruta óptima resaltada en el grafo</p>
+                        </div>
+                    </div>
+                {% endif %}
+            {% elif error %}
+                <div class="card mt-4">
+                    <div class="card-header bg-danger text-white">
+                        <h4><i class="fas fa-exclamation-circle"></i> Error</h4>
+                    </div>
+                    <div class="card-body">
+                        <p>{{ error }}</p>
+                        <div class="text-center">
+                            <img src="{{ url_for('grafos.grafo_imagen') }}"
+                                 alt="Grafo de ciudades"
+                                 class="img-fluid border rounded shadow"
+                                 style="max-width: 600px; height: auto;"/>
+                            <p class="text-muted mt-2">Grafo completo de ciudades</p>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card mt-4">
+                    <div class="card-body text-center">
+                        <img src="{{ url_for('grafos.grafo_imagen') }}"
+                             alt="Grafo de ciudades"
+                             class="img-fluid border rounded shadow"
+                             style="max-width: 600px; height: auto;"/>
+                        <p class="text-muted mt-2">Selecciona origen y destino para calcular la ruta óptima</p>
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <a href="{{ url_for('grafos.ver_camino') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-eye"></i> Ver Ruta Fija Ibarra → Loja
+                    </a>
+                    <a href="{{ url_for('grafos.starter') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-info-circle"></i> Aprender sobre Grafos
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Introducción a los Grafos{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Introducción a los Grafos</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home.home') }}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Grafos</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h2><i class="fas fa-project-diagram"></i> Introducción a los Grafos</h2>
+                    {% if stats %}
+                    <p class="mb-0">Sistema actualizado: {{ stats.fecha_actualizacion }}</p>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <p class="lead">
+                        Un <strong>grafo</strong> es una estructura matemática utilizada para modelar relaciones entre objetos. 
+                        Está compuesto por <b>nodos</b> (o vértices) y <b>aristas</b> (o enlaces) que conectan pares de nodos.
+                    </p>
+                    
+                    {% if stats %}
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-info-circle"></i> Estadísticas del Sistema</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>{{ stats.total_ciudades }}</strong> ciudades en total
+                            </div>
+                            <div class="col-md-4">
+                                <strong>{{ stats.ciudades_costeras }}</strong> ciudades costeras
+                            </div>
+                            <div class="col-md-4">
+                                Última actualización: <strong>{{ stats.fecha_actualizacion }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h4><i class="fas fa-circle"></i> Componentes principales</h4>
+                            <ul>
+                                <li><b>Nodo (Vértice):</b> Representa un objeto o entidad.</li>
+                                <li><b>Arista (Enlace):</b> Representa la relación o conexión entre dos nodos.</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h4><i class="fas fa-random"></i> Tipos de grafos</h4>
+                            <ul>
+                                <li><b>Dirigido:</b> Las aristas tienen dirección (como una flecha).</li>
+                                <li><b>No dirigido:</b> Las aristas no tienen dirección.</li>
+                                <li><b>Ponderado:</b> Las aristas tienen un valor o peso asociado.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    <h5><i class="fas fa-lightbulb"></i> ¿Dónde se usan los grafos?</h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Redes sociales</li>
+                                <li>Mapas y rutas</li>
+                                <li>Internet y redes de computadoras</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li>Biología y química</li>
+                                <li>Algoritmos de búsqueda</li>
+                                <li>Sistemas de recomendación</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <i class="fas fa-network-wired fa-4x text-primary"></i>
+                        <p class="mt-3">¡Explora el fascinante mundo de los grafos en este proyecto!</p>
+                        <div class="mt-3">
+                            <a href="{{ url_for('grafos.calcular_camino') }}" class="btn btn-primary me-2">
+                                <i class="fas fa-calculator"></i> Calcular Rutas
+                            </a>
+                            <a href="{{ url_for('grafos.ver_camino') }}" class="btn btn-success">
+                                <i class="fas fa-route"></i> Ver Ejemplo
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

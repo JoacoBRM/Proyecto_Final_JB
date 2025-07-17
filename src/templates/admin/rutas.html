@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Conexiones del Sistema{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main/css/admin.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='main/js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/notifications.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/rutas.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Conexiones del Sistema</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home.home') }}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Conexiones</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Mensajes flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Todas las Conexiones Registradas</h3>
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-success btn-sm mr-2" data-toggle="modal" data-target="#addRutaModal">
+                                    <i class="fas fa-plus"></i> Añadir Nueva Ruta
+                                </button>
+                                <span class="badge badge-info">Total: {{ rutas|length }} conexiones</span>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            {% if rutas %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Ciudad A</th>
+                                                <th>Provincia A</th>
+                                                <th>Ciudad B</th>
+                                                <th>Provincia B</th>
+                                                <th>Costo</th>
+                                                <th>Tipo</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for ruta in rutas %}
+                                            <tr>
+                                                <td>{{ ruta.id }}</td>
+                                                <td>{{ ruta.ciudad_origen.nombre }}</td>
+                                                <td>{{ ruta.ciudad_origen.provincia.nombre }}</td>
+                                                <td>{{ ruta.ciudad_destino.nombre }}</td>
+                                                <td>{{ ruta.ciudad_destino.provincia.nombre }}</td>
+                                                <td>${{ "%.2f"|format(ruta.costo) }}</td>
+                                                <td>
+                                                    {% if ruta.ciudad_origen.es_costera and ruta.ciudad_destino.es_costera %}
+                                                        <span class="badge badge-info">Costera-Costera</span>
+                                                    {% elif ruta.ciudad_origen.es_costera or ruta.ciudad_destino.es_costera %}
+                                                        <span class="badge badge-warning">Mixta</span>
+                                                    {% else %}
+                                                        <span class="badge badge-secondary">Interior-Interior</span>
+                                                    {% endif %}
+                                                    <br><small class="text-muted">Conexión no dirigida</small>
+                                                </td>
+                                                <td>
+                                                    <button type="button" class="btn btn-warning btn-sm" 
+                                                            data-toggle="modal" 
+                                                            data-target="#editRutaModal" 
+                                                            data-ruta-id="{{ ruta.id }}"
+                                                            data-ciudad-origen="{{ ruta.ciudad_origen.nombre }}"
+                                                            data-ciudad-destino="{{ ruta.ciudad_destino.nombre }}"
+                                                            data-costo="{{ ruta.costo }}"
+                                                            title="Editar costo">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <!-- Estadísticas -->
+                                <div class="row mt-4">
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-info">
+                                                <i class="fas fa-route"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Total Conexiones</span>
+                                                <span class="info-box-number">{{ rutas|length }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-success">
+                                                <i class="fas fa-city"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Ciudades Conectadas</span>
+                                                <span class="info-box-number">
+                                                    {% set ciudades_unicas = [] %}
+                                                    {% for ruta in rutas %}
+                                                        {% if ruta.ciudad_origen_id not in ciudades_unicas %}
+                                                            {% set _ = ciudades_unicas.append(ruta.ciudad_origen_id) %}
+                                                        {% endif %}
+                                                        {% if ruta.ciudad_destino_id not in ciudades_unicas %}
+                                                            {% set _ = ciudades_unicas.append(ruta.ciudad_destino_id) %}
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {{ ciudades_unicas|length }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-warning">
+                                                <i class="fas fa-dollar-sign"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Costo Promedio</span>
+                                                <span class="info-box-number">
+                                                    {% set total_costo = rutas|sum(attribute='costo') %}
+                                                    ${{ "%.2f"|format(total_costo / rutas|length) }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="info-box">
+                                            <span class="info-box-icon bg-danger">
+                                                <i class="fas fa-water"></i>
+                                            </span>
+                                            <div class="info-box-content">
+                                                <span class="info-box-text">Conexiones Costeras</span>
+                                                <span class="info-box-number">
+                                                    {% set rutas_costeras = rutas|selectattr('ciudad_origen.es_costera')|list + rutas|selectattr('ciudad_destino.es_costera')|list %}
+                                                    {{ rutas_costeras|length }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    No hay conexiones registradas en el sistema. Las conexiones se crean automáticamente al agregar ciudades con conexiones.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enlaces de navegación -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <a href="{{ url_for('admin.listar_provincias') }}" class="btn btn-success">
+                                <i class="fas fa-map"></i> Administrar Provincias
+                            </a>
+                            <a href="{{ url_for('admin.listar_ciudades') }}" class="btn btn-primary">
+                                <i class="fas fa-city"></i> Administrar Ciudades
+                            </a>
+                            <a href="{{ url_for('home.home') }}" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Volver al Inicio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Modal para añadir nueva ruta -->
+<div class="modal fade" id="addRutaModal" tabindex="-1" role="dialog" aria-labelledby="addRutaModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addRutaModalLabel">Añadir Nueva Conexión</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.crear_ruta_directa') }}" id="addRutaForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="ciudad_origen">Ciudad Origen:</label>
+                        <select class="form-control" id="ciudad_origen" name="ciudad_origen_id" required>
+                            <option value="">Seleccionar ciudad origen</option>
+                            {% for ciudad in ciudades %}
+                                <option value="{{ ciudad.id }}">{{ ciudad.nombre }} ({{ ciudad.provincia.nombre }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ciudad_destino">Ciudad Destino:</label>
+                        <select class="form-control" id="ciudad_destino" name="ciudad_destino_id" required>
+                            <option value="">Seleccionar ciudad destino</option>
+                            {% for ciudad in ciudades %}
+                                <option value="{{ ciudad.id }}">{{ ciudad.nombre }} ({{ ciudad.provincia.nombre }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="costo">Costo de la Conexión:</label>
+                        <input type="number" class="form-control" id="costo" name="costo" step="0.01" min="0.01" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Añadir Conexión</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar costo de ruta -->
+<div class="modal fade" id="editRutaModal" tabindex="-1" role="dialog" aria-labelledby="editRutaModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRutaModalLabel">Editar Costo de Conexión</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="POST" action="{{ url_for('admin.editar_ruta_directa') }}" id="editRutaForm">
+                <div class="modal-body">
+                    <input type="hidden" id="edit_ruta_id" name="ruta_id">
+                    <div class="form-group">
+                        <label for="edit_costo">Nuevo Costo de la Conexión:</label>
+                        <input type="number" class="form-control" id="edit_costo" name="costo" step="0.01" min="0.01" required>
+                        <small class="form-text text-muted">Ingrese el nuevo costo para esta conexión bidireccional.</small>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-warning">Actualizar Costo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

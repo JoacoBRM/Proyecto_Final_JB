@@ -1,0 +1,10 @@
+Flask
+Flask-Login
+Flask-SQLAlchemy
+matplotlib
+python-dotenv
+PyMySQL
+networkx
+Werkzeug
+reportlab
+pillow

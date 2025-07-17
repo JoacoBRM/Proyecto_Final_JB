@@ -1,0 +1,178 @@
+{% extends "base.html" %}
+
+{% block title %}Administrar Provincias{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='main/css/admin.css') }}">
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='main/js/admin.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/notifications.js') }}"></script>
+<script src="{{ url_for('static', filename='main/js/provincias.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1 class="m-0">Administrar Provincias</h1>
+                </div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home.home') }}">Inicio</a></li>
+                        <li class="breadcrumb-item active">Provincias</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section class="content">
+        <div class="container-fluid">
+            <!-- Mostrar mensajes flash -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{% if category == 'error' %}danger{% else %}{{ category }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            
+            <!-- Formulario para crear nueva provincia -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Agregar Nueva Provincia</h3>
+                        </div>
+                        <div class="card-body">
+                            <form action="{{ url_for('admin.crear_provincia') }}" method="POST">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label for="nombre">Nombre de la Provincia *</label>
+                                            <input type="text" class="form-control" id="nombre" name="nombre" 
+                                                   required maxlength="100" placeholder="Ingrese el nombre de la provincia"
+                                                   pattern="[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+" 
+                                                   title="Solo se permiten letras y espacios"
+                                                   oninput="validateTextInput(this)">
+                                            <small class="form-text text-muted">Solo se permiten letras y espacios</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>&nbsp;</label>
+                                            <div>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="fas fa-plus"></i> Agregar Provincia
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lista de provincias existentes -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Provincias Registradas</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if provincias %}
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Nombre</th>
+                                                <th>Ciudades</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for provincia in provincias %}
+                                            <tr>
+                                                <td>{{ provincia.id }}</td>
+                                                <td>{{ provincia.nombre }}</td>
+                                                <td>
+                                                    <span class="badge badge-info">
+                                                        {{ provincia.ciudades|length }} ciudad(es)
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="btn-group" role="group">
+                                                        <a href="{{ url_for('admin.editar_provincia', provincia_id=provincia.id) }}" 
+                                                           class="btn btn-sm btn-warning">
+                                                            <i class="fas fa-edit"></i> Editar
+                                                        </a>
+                                                        {% if provincia.ciudades|length == 0 %}
+                                                        <form method="POST" 
+                                                              action="{{ url_for('admin.eliminar_provincia', provincia_id=provincia.id) }}" 
+                                                              style="display: inline;"
+                                                              onsubmit="return confirm('¿Está seguro de que desea eliminar la provincia {{ provincia.nombre }}? Esta acción no se puede deshacer.')">
+                                                            <button type="submit" 
+                                                                    class="btn btn-sm btn-danger">
+                                                                <i class="fas fa-trash"></i> Eliminar
+                                                            </button>
+                                                        </form>
+                                                        {% else %}
+                                                        <button class="btn btn-sm btn-secondary" disabled 
+                                                                title="No se puede eliminar una provincia con ciudades">
+                                                            <i class="fas fa-trash"></i> Eliminar
+                                                        </button>
+                                                        {% endif %}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i>
+                                    No hay provincias registradas. Agregue la primera provincia usando el formulario anterior.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Enlaces de navegación -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <a href="{{ url_for('admin.listar_ciudades') }}" class="btn btn-success">
+                                <i class="fas fa-city"></i> Administrar Ciudades
+                            </a>
+                            <a href="{{ url_for('admin.listar_rutas') }}" class="btn btn-info">
+                                <i class="fas fa-route"></i> Ver Rutas
+                            </a>
+                            <a href="{{ url_for('home.home') }}" class="btn btn-secondary">
+                                <i class="fas fa-home"></i> Volver al Inicio
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+{% endblock %}

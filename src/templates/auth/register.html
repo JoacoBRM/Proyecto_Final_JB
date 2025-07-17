@@ -1,0 +1,53 @@
+{% extends "auth/login.html" %}
+
+{% block title %}Registro{% endblock %}
+{% block header %}Crear Cuenta{% endblock %}
+{% block subtitle %}Únete a nosotros{% endblock %}
+
+{% block content %}
+<!-- Formulario de Registro -->
+<form method="POST">
+    <div class="mb-3">
+        <label for="username" class="form-label">
+            <i class="fas fa-user"></i> Nombre de Usuario
+        </label>
+        <input type="text" class="form-control" id="username" name="username" required
+               value="{{ request.form.username if request.form }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="email" class="form-label">
+            <i class="fas fa-envelope"></i> Email
+        </label>
+        <input type="email" class="form-control" id="email" name="email" required
+               value="{{ request.form.email if request.form }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="password" class="form-label">
+            <i class="fas fa-lock"></i> Contraseña
+        </label>
+        <input type="password" class="form-control" id="password" name="password" required>
+        <div class="form-text">La contraseña debe tener al menos 6 caracteres.</div>
+    </div>
+
+    <div class="mb-3">
+        <label for="confirm_password" class="form-label">
+            <i class="fas fa-lock"></i> Confirmar Contraseña
+        </label>
+        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+    </div>
+
+    <button type="submit" class="btn btn-login">
+        <i class="fas fa-user-plus"></i> Registrarse
+    </button>
+</form>
+
+<div class="auth-footer">
+    <p>¿Ya tienes una cuenta? 
+        <a href="{{ url_for('auth.login') }}" class="link-register">
+            <i class="fas fa-sign-in-alt"></i> Inicia sesión aquí
+        </a>
+    </p>
+</div>
+{% endblock %}
