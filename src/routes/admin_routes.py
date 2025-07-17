@@ -70,7 +70,3 @@ admin_bp.route('/rutas/agregar', methods=['POST'])(AdminController.agregar_ruta_
 # Eliminar conexión específica entre ciudades
 admin_bp.route('/rutas/eliminar-conexion', methods=['POST'])(AdminController.eliminar_ruta)
 
-
-# ===== API ENDPOINTS PARA DATOS DINÁMICOS =====
-# Obtener ciudades filtradas por provincia (AJAX)
-admin_bp.route('/api/ciudades-por-provincia', methods=['GET'])(AdminController.obtener_ciudades_por_provincia)
