@@ -53,7 +53,7 @@ Proyecto_Final_JB/
 1. **Clonar el repositorio**
 
    ```bash
-   git clone https://github.com/tu-usuario/Proyecto_Final_JB.git
+   git clone https://github.com/JoacoBRM/Proyecto_Final_JB.git
    cd Proyecto_Final_JB
    ```
 2. **Crear entorno virtual**
@@ -104,7 +104,6 @@ Proyecto_Final_JB/
 
 Para más información detallada, consultar:
 
-- `docs/manual-usuario.pdf` - Guía de uso de la aplicación
 - `docs/manual-tecnico.pdf` - Documentación técnica completa
 
 ## 📄 Licencia
